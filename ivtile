@@ -17,27 +17,24 @@ class IVTile(invar.InvarUtility):
     description = 'Render tiles for a given bounding box from a Mapnik2 XML configuration file.'
 
     def add_arguments(self):
-        self.argparser.add_argument('config', help="Mapnik2 XML configuration file")
-        self.argparser.add_argument('tile_dir', help="Destination directory for rendered tiles")
         self.argparser.add_argument('lat_1', type=float, help="Most nortern latitude")
         self.argparser.add_argument('lon_1', type=float, help="Most western longitude")
         self.argparser.add_argument('lat_2', type=float, help="Most southern latitude")
         self.argparser.add_argument('lon_2', type=float, help="Most eastern longitude")
         self.argparser.add_argument('min_zoom', help="Minimum zoom level to render", type=int, default=invar.DEFAULT_MIN_ZOOM)
         self.argparser.add_argument('max_zoom', help="Maximum zoom level to render", type=int, default=invar.DEFAULT_MAX_ZOOM)
-        self.argparser.add_argument('process_count', help="Number of rendering processes to create", type=int, default=invar.DEFAULT_PROCESS_COUNT)
 
     def main(self):
         bbox = (self.args.lat_1, self.args.lon_1,  self.args.lat_2, self.args.lon_2)
     
-        render_tiles(bbox, self.args.config, self.args.tile_dir, self.args.min_zoom, self.args.max_zoom, self.args.process_count)
+        render_tiles(bbox, self.args.config, self.args.output_dir, self.args.min_zoom, self.args.max_zoom, self.args.processes)
 
-def render_tiles(bbox, config, tile_dir, min_zoom=invar.DEFAULT_MIN_ZOOM, max_zoom=invar.DEFAULT_MAX_ZOOM, process_count=invar.DEFAULT_PROCESS_COUNT):
+def render_tiles(bbox, config, output_dir, min_zoom=invar.DEFAULT_MIN_ZOOM, max_zoom=invar.DEFAULT_MAX_ZOOM, process_count=invar.DEFAULT_PROCESS_COUNT):
     """
     Renders a batch of tiles for a given bounding-box.
     """
-    if not os.path.isdir(tile_dir):
-         os.mkdir(tile_dir)
+    if not os.path.isdir(output_dir):
+         os.mkdir(output_dir)
 
     tile_projection = invar.GoogleProjection(max_zoom) 
 
@@ -56,7 +53,7 @@ def render_tiles(bbox, config, tile_dir, min_zoom=invar.DEFAULT_MIN_ZOOM, max_zo
         tile_y1 = int(px0[1] / 256.0)
         tile_y2 = int(px1[1] / 256.0) + 1
 
-        zoom_dir = os.path.join(tile_dir, str(zoom))
+        zoom_dir = os.path.join(output_dir, str(zoom))
 
         if not os.path.isdir(zoom_dir):
             os.mkdir(zoom_dir)

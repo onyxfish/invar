@@ -19,12 +19,9 @@ class IVFrame(invar.InvarUtility):
     description = 'Render centered frames from a Mapnik2 XML configuration file. Accepts either a single latitude/longitude pair or the name of a CSV file containing appropriate columns.'
 
     def add_arguments(self):
-        self.argparser.add_argument('config', help="Mapnik2 XML configuration file.")
-        self.argparser.add_argument('tile_dir', help="Destination directory for rendered tiles.")
         self.argparser.add_argument('latitude',  help='Latitude to center rendering on.', type=float, nargs='?')
         self.argparser.add_argument('longitude', help='Longitude to center rendering on.', type=float, nargs='?')
         self.argparser.add_argument('-z', '--zoom', help="Zoom level to render.", type=int, default=DEFAULT_ZOOM)
-        self.argparser.add_argument('-p', '--process_count', help="Number of rendering processes to create.", type=int, default=invar.DEFAULT_PROCESS_COUNT)
         self.argparser.add_argument('--csv', help='A CSV file containing at latitude and longitude columns.')
         self.argparser.add_argument('-n', '--name', help='The name of the output image or the name of a column in the CSV file to use as a filename (not including extension).')
 
@@ -37,14 +34,14 @@ class IVFrame(invar.InvarUtility):
 
             tile_parameters = [('%s.png' % (self.args.name or 'frame'), self.args.latitude, self.args.longitude, self.args.zoom)]
 
-        render_frames(tile_parameters, self.args.config, self.args.tile_dir, self.args.zoom, self.args.process_count)
+        render_frames(tile_parameters, self.args.config, self.args.output_dir, self.args.zoom, self.args.processes)
 
-def render_frames(tile_parameters, config, tile_dir, zoom, process_count):
+def render_frames(tile_parameters, config, output_dir, zoom, process_count):
     """
     Render a series of centered frames.
     """
-    if not os.path.isdir(tile_dir):
-         os.mkdir(tile_dir)
+    if not os.path.isdir(output_dir):
+         os.mkdir(output_dir)
 
     tile_queue = multiprocessing.JoinableQueue()
     tile_count = 0

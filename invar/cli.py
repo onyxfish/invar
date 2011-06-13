@@ -3,6 +3,8 @@
 import argparse
 import sys
 
+import constants
+
 class InvarUtility(object):
     description = ''
     epilog = ''
@@ -36,13 +38,12 @@ class InvarUtility(object):
     def _init_common_parser(self):
         """
         Prepare a base argparse argument parser so that flags are consistent across different shell command tools.
-        If you want to constrain which common args are present, you can pass a string for 'omitflags'. Any argument
-        whose single-letter form is contained in 'omitflags' will be left out of the configured parser. Use 'f' for 
-        file.
         """
         self.argparser = argparse.ArgumentParser(description=self.description, epilog=self.epilog)
 
-        pass
+        self.argparser.add_argument('config', help="Mapnik2 XML configuration file.")
+        self.argparser.add_argument('output_dir', help="Destination directory for output.")
+        self.argparser.add_argument('-p', '--processes', help="Number of rendering processes to create", type=int, default=constants.DEFAULT_PROCESS_COUNT)
 
     def _install_exception_handler(self):
         """
