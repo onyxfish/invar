@@ -1,17 +1,11 @@
 #!/usr/bin/python
 
-import argparse
 import csv
 import multiprocessing
 import os
 import sys
 
-import mapnik2
-
 import invar
-
-mapnik2.register_fonts('/Library/Fonts/')
-mapnik2.register_fonts('/usr/share/fonts')
 
 DEFAULT_ZOOM = 16
 

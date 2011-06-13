@@ -6,12 +6,7 @@
 import multiprocessing
 import os
 
-import mapnik2
-
 import invar
-
-mapnik2.register_fonts('/Library/Fonts/')
-mapnik2.register_fonts('/usr/share/fonts')
 
 class IVTile(invar.InvarUtility):
     description = 'Render tiles for a given bounding box from a Mapnik2 XML configuration file.'

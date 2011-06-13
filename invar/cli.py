@@ -3,6 +3,8 @@
 import argparse
 import sys
 
+import mapnik2
+
 import constants
 
 class InvarUtility(object):
@@ -18,6 +20,9 @@ class InvarUtility(object):
         self.add_arguments()
         self.args = self.argparser.parse_args()
         self._install_exception_handler()
+
+        mapnik2.register_fonts('/Library/Fonts/')
+        mapnik2.register_fonts('/usr/share/fonts')
 
     def add_arguments(self):
         """
