@@ -48,9 +48,9 @@ def render_frames(tile_parameters, config, tile_dir, zoom, process_count):
 def get_tile_parameters_from_csv(filename, zoom, name_column=None):
     """
     Finds latitude and longitude columns in a CSV and extracts coordinate pairs from them.
-    """
-    coordinates = []
 
+    Note: this is a generator function.
+    """
     with open(filename, 'rU') as f:
         rows = csv.reader(f)
         headers = rows.next()
@@ -93,9 +93,7 @@ def get_tile_parameters_from_csv(filename, zoom, name_column=None):
             else:
                 name = str(i)
 
-            coordinates.append(('%s.png' % name, latitude, longitude, zoom))
-
-    return coordinates
+            yield ('%s.png' % name, latitude, longitude, zoom)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Render centered frames from a Mapnik2 XML configuration file. Accepts either a single latitude/longitude pair or the name of a CSV file containing appropriate columns.')
