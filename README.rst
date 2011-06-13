@@ -42,7 +42,7 @@ Much of this application is derived from selections of the Open Street Map proje
 
 **Authors**
 
-* Christopher Groskopf (`@onxyfish <http://twitter.com/onyxfish`_)
+* Christopher Groskopf (`@onxyfish <http://twitter.com/onyxfish>`_)
 
 License
 =======
