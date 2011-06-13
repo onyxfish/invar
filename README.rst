@@ -12,6 +12,8 @@ invar only works with Mapnik2. Instructions for installing Mapnik2 can be found 
 
     pip install invar
 
+**Note:** it can be quite tricky to get Mapnik2 working within virtualenv, so it may be better to install invar in the global site-packages.
+
 Usage
 =====
 
