@@ -68,7 +68,7 @@ def render_tiles(bbox, config, tile_dir, min_zoom=invar.DEFAULT_MIN_ZOOM, max_zo
     processes = []
 
     for i in range(process_count):
-        renderer = invar.Renderer(tile_queue, config)
+        renderer = invar.TileRenderer(tile_queue, config)
         renderer.start()
 
         processes.append(renderer)
@@ -80,8 +80,6 @@ def render_tiles(bbox, config, tile_dir, min_zoom=invar.DEFAULT_MIN_ZOOM, max_zo
             p.terminate()
 
 if __name__ == "__main__":
-    
-    #python render_tiles.py tilemill/wards.xml mayor-2011/.tiles/wards/ -89.03 41.07 -87.51 42.50 9 16 2
     parser = argparse.ArgumentParser(description='Render tiles for a given bounding box from a Mapnik2 XML configuration file.')
     parser.add_argument('config', help="Mapnik2 XML configuration file")
     parser.add_argument('tile_dir', help="Destination directory for rendered tiles")
@@ -92,8 +90,8 @@ if __name__ == "__main__":
     parser.add_argument('min_zoom', help="Minimum zoom level to render", type=int, default=invar.DEFAULT_MIN_ZOOM)
     parser.add_argument('max_zoom', help="Maximum zoom level to render", type=int, default=invar.DEFAULT_MAX_ZOOM)
     parser.add_argument('process_count', help="Number of rendering processes to create", type=int, default=invar.DEFAULT_PROCESS_COUNT)
+
     args = parser.parse_args()
-    
     bbox = (args.lat_1, args.lon_1,  args.lat_2, args.lon_2)
     
     render_tiles(bbox, args.config, args.tile_dir, args.min_zoom, args.max_zoom, args.process_count)
