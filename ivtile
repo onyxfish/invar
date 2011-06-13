@@ -27,6 +27,7 @@ def render_tiles(bbox, config, tile_dir, min_zoom=invar.DEFAULT_MIN_ZOOM, max_zo
     ll1 = (bbox[3], bbox[2])
 
     tile_queue = multiprocessing.JoinableQueue()
+    tile_count = 0
 
     for zoom in range(min_zoom, max_zoom + 1):
         px0 = tile_projection.fromLLtoPixel(ll0, zoom)
@@ -62,8 +63,9 @@ def render_tiles(bbox, config, tile_dir, min_zoom=invar.DEFAULT_MIN_ZOOM, max_zo
                 # Submit tile to be rendered into the queue
                 t = (filename, tile_x, tile_y, zoom)
                 tile_queue.put(t)
+                tile_count += 1
 
-    print 'Using %i processes to render %i tiles' % (process_count, tile_queue.qsize())
+    print 'Using %i processes to render %i tiles' % (process_count, tile_count)
 
     processes = []
 
