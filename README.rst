@@ -29,9 +29,9 @@ Details of each parameter are available via::
 
 **ivframe**
 
-invar framer rendering a single frame::
+invar framer rendering a single frame to the current directory::
 
-    ivframe map.xml output_directory 32.351 -95.301 --processes 2
+    ivframe map.xml . 32.351 -95.301 --name filename_without_extension 
 
     
 invar framer rendering a series frames from latitude/longitude pairs in a CSV file::
@@ -44,7 +44,7 @@ Details of each parameter are available via::
 
 **Using with TileMill**
 
-In order to use invar with TileMill you need to convert TileMill's .mml configuration and .mss styles into a Mapnik .xml file. Here is an example of how this might work::
+In order to use invar with `TileMill <http://tilemill.com/>`_ you need to convert TileMill's .mml configuration and .mss styles into a Mapnik .xml file. Here is an example of how to do this::
 
     tilemill/bin/node tilemill/bin/carto map.mml > map.xml
 
