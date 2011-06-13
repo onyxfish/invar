@@ -19,13 +19,23 @@ Usage
 
 **ivtile**
 
-invar tile sample usage::
+invar tiler sample usage::
 
     ivtile map.xml output_directory 32.4419 -95.393 32.2307 -95.301 10 16 2
 
-Details of each paramters are available via::
+Details of each parameter are available via::
 
     ivtile -h
+
+**ivframe**
+
+invar framer sample user::
+
+    ivframe map.xml output_directory 32.351 -95.301
+
+Details of each parameter are available via::
+
+    ivframe -h
 
 **Using with TileMill**
 

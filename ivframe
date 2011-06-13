@@ -23,13 +23,15 @@ def render_frames(coordinates, config, tile_dir, zoom, process_count):
          os.mkdir(tile_dir)
 
     tile_queue = multiprocessing.JoinableQueue()
+    tile_count = 0
 
     for i, c in enumerate(coordinates):
         filename = os.path.join(tile_dir, '%i.png' % i)
 
         tile_queue.put((filename, c[0], c[1], zoom))
+        tile_count += 1
 
-    print 'Using %i processes to render %i tiles' % (process_count, tile_queue.qsize())
+    print 'Using %i processes to render %i tiles' % (process_count, tile_count)
 
     processes = []
 
@@ -89,8 +91,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Render centered frames from a Mapnik2 XML configuration file. Accepts either a single latitude/longitude pair or the name of a CSV file containing appropriate columns.')
     parser.add_argument('config', help="Mapnik2 XML configuration file.")
     parser.add_argument('tile_dir', help="Destination directory for rendered tiles.")
-    parser.add_argument('latitude',  help='Latitude to center rendering on.', nargs='?')
-    parser.add_argument('longitude', help='Longitude to center rendering on.', nargs='?')
+    parser.add_argument('latitude',  help='Latitude to center rendering on.', type=float, nargs='?')
+    parser.add_argument('longitude', help='Longitude to center rendering on.', type=float, nargs='?')
     parser.add_argument('-z', '--zoom', help="Zoom level to render.", type=int, default=DEFAULT_ZOOM)
     parser.add_argument('-p', '--process_count', help="Number of rendering processes to create.", type=int, default=invar.DEFAULT_PROCESS_COUNT)
     parser.add_argument('--csv', help='A CSV file containing at latitude and longitude columns.')
@@ -100,7 +102,7 @@ if __name__ == "__main__":
     if args.csv:
         coordinates = get_coordinates_from_csv(args.csv)
     else:
-        if not args.latitude or args.longitude:
+        if not args.latitude or not args.longitude:
             sys.exit('You must specify a latitude and longitude unless providing the name of a CSV.')
 
         coordinates = [(args.latitude, args.longitude)]
