@@ -55,6 +55,10 @@ Credits
 
 Much of this application is derived from selections of the Open Street Map project--notably `generate_tiles.py <http://svn.openstreetmap.org/applications/rendering/mapnik/generate_tiles.py>`_.
 
+**Projects**
+
+invar was developed to address the needs of both `@tribapps <http://twitter.com/tribapps>`_ and the `#hacktyler <http://hacktyler.com>`_ project.
+
 **Authors**
 
 * Christopher Groskopf (`@onxyfish <http://twitter.com/onyxfish>`_)
