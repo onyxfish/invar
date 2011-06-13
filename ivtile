@@ -1,0 +1,99 @@
+#!/usr/bin/python
+
+# Inspired by generate_tiles.py, part of the Open Street Map project:
+# http://svn.openstreetmap.org/applications/rendering/mapnik/generate_tiles.py
+
+import argparse
+import multiprocessing
+import os
+
+import mapnik2
+
+import invar
+
+mapnik2.register_fonts('/Library/Fonts/')
+mapnik2.register_fonts('/usr/share/fonts')
+
+def render_tiles(bbox, config, tile_dir, min_zoom=invar.DEFAULT_MIN_ZOOM, max_zoom=invar.DEFAULT_MAX_ZOOM, process_count=invar.DEFAULT_PROCESS_COUNT):
+    """
+    Renders a batch of tiles for a given bounding-box.
+    """
+    if not os.path.isdir(tile_dir):
+         os.mkdir(tile_dir)
+
+    tile_projection = invar.GoogleProjection(max_zoom) 
+
+    ll0 = (bbox[1], bbox[0])
+    ll1 = (bbox[3], bbox[2])
+
+    tile_queue = multiprocessing.JoinableQueue()
+
+    for zoom in range(min_zoom, max_zoom + 1):
+        px0 = tile_projection.fromLLtoPixel(ll0, zoom)
+        px1 = tile_projection.fromLLtoPixel(ll1, zoom)
+
+        tile_x1 = int(px0[0] / 256.0)
+        tile_x2 = int(px1[0] / 256.0) + 1
+        tile_y1 = int(px0[1] / 256.0)
+        tile_y2 = int(px1[1] / 256.0) + 1
+
+        zoom_dir = os.path.join(tile_dir, str(zoom))
+
+        if not os.path.isdir(zoom_dir):
+            os.mkdir(zoom_dir)
+
+        for tile_x in range(tile_x1, tile_x2):
+            # Validate x coordinate
+            if (tile_x < 0) or (tile_x >= 2**zoom):
+                continue
+
+            x_dir = os.path.join(zoom_dir, str(tile_x))
+
+            if not os.path.isdir(x_dir):
+                os.mkdir(x_dir)
+
+            for tile_y in range(tile_y1, tile_y2):
+                # Validate y coordinate
+                if (tile_y < 0) or (tile_y >= 2**zoom):
+                    continue
+
+                filename = os.path.join(x_dir, '%s.png' % str(tile_y))
+
+                # Submit tile to be rendered into the queue
+                t = (filename, tile_x, tile_y, zoom)
+                tile_queue.put(t)
+
+    print 'Using %i processes to render %i tiles' % (process_count, tile_queue.qsize())
+
+    processes = []
+
+    for i in range(process_count):
+        renderer = invar.Renderer(tile_queue, config)
+        renderer.start()
+
+        processes.append(renderer)
+
+    try:
+        tile_queue.join()
+    except KeyboardInterrupt:
+        for p in processes:
+            p.terminate()
+
+if __name__ == "__main__":
+    
+    #python render_tiles.py tilemill/wards.xml mayor-2011/.tiles/wards/ -89.03 41.07 -87.51 42.50 9 16 2
+    parser = argparse.ArgumentParser(description='Render tiles for a given bounding box from a Mapnik2 XML configuration file.')
+    parser.add_argument('config', help="Mapnik2 XML configuration file")
+    parser.add_argument('tile_dir', help="Destination directory for rendered tiles")
+    parser.add_argument('lat_1', type=float, help="Most nortern latitude")
+    parser.add_argument('lon_1', type=float, help="Most western longitude")
+    parser.add_argument('lat_2', type=float, help="Most southern latitude")
+    parser.add_argument('lon_2', type=float, help="Most eastern longitude")
+    parser.add_argument('min_zoom', help="Minimum zoom level to render", type=int, default=invar.DEFAULT_MIN_ZOOM)
+    parser.add_argument('max_zoom', help="Maximum zoom level to render", type=int, default=invar.DEFAULT_MAX_ZOOM)
+    parser.add_argument('process_count', help="Number of rendering processes to create", type=int, default=invar.DEFAULT_PROCESS_COUNT)
+    args = parser.parse_args()
+    
+    bbox = (args.lat_1, args.lon_1,  args.lat_2, args.lon_2)
+    
+    render_tiles(bbox, args.config, args.tile_dir, args.min_zoom, args.max_zoom, args.process_count)
