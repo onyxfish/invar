@@ -3,7 +3,6 @@
 # Inspired by generate_tiles.py, part of the Open Street Map project:
 # http://svn.openstreetmap.org/applications/rendering/mapnik/generate_tiles.py
 
-import argparse
 import multiprocessing
 import os
 
@@ -13,6 +12,25 @@ import invar
 
 mapnik2.register_fonts('/Library/Fonts/')
 mapnik2.register_fonts('/usr/share/fonts')
+
+class IVTile(invar.InvarUtility):
+    description = 'Render tiles for a given bounding box from a Mapnik2 XML configuration file.'
+
+    def add_arguments(self):
+        self.argparser.add_argument('config', help="Mapnik2 XML configuration file")
+        self.argparser.add_argument('tile_dir', help="Destination directory for rendered tiles")
+        self.argparser.add_argument('lat_1', type=float, help="Most nortern latitude")
+        self.argparser.add_argument('lon_1', type=float, help="Most western longitude")
+        self.argparser.add_argument('lat_2', type=float, help="Most southern latitude")
+        self.argparser.add_argument('lon_2', type=float, help="Most eastern longitude")
+        self.argparser.add_argument('min_zoom', help="Minimum zoom level to render", type=int, default=invar.DEFAULT_MIN_ZOOM)
+        self.argparser.add_argument('max_zoom', help="Maximum zoom level to render", type=int, default=invar.DEFAULT_MAX_ZOOM)
+        self.argparser.add_argument('process_count', help="Number of rendering processes to create", type=int, default=invar.DEFAULT_PROCESS_COUNT)
+
+    def main(self):
+        bbox = (self.args.lat_1, self.args.lon_1,  self.args.lat_2, self.args.lon_2)
+    
+        render_tiles(bbox, self.args.config, self.args.tile_dir, self.args.min_zoom, self.args.max_zoom, self.args.process_count)
 
 def render_tiles(bbox, config, tile_dir, min_zoom=invar.DEFAULT_MIN_ZOOM, max_zoom=invar.DEFAULT_MAX_ZOOM, process_count=invar.DEFAULT_PROCESS_COUNT):
     """
@@ -82,18 +100,6 @@ def render_tiles(bbox, config, tile_dir, min_zoom=invar.DEFAULT_MIN_ZOOM, max_zo
             p.terminate()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Render tiles for a given bounding box from a Mapnik2 XML configuration file.')
-    parser.add_argument('config', help="Mapnik2 XML configuration file")
-    parser.add_argument('tile_dir', help="Destination directory for rendered tiles")
-    parser.add_argument('lat_1', type=float, help="Most nortern latitude")
-    parser.add_argument('lon_1', type=float, help="Most western longitude")
-    parser.add_argument('lat_2', type=float, help="Most southern latitude")
-    parser.add_argument('lon_2', type=float, help="Most eastern longitude")
-    parser.add_argument('min_zoom', help="Minimum zoom level to render", type=int, default=invar.DEFAULT_MIN_ZOOM)
-    parser.add_argument('max_zoom', help="Maximum zoom level to render", type=int, default=invar.DEFAULT_MAX_ZOOM)
-    parser.add_argument('process_count', help="Number of rendering processes to create", type=int, default=invar.DEFAULT_PROCESS_COUNT)
+    ivtile = IVTile()
+    ivtile.main()
 
-    args = parser.parse_args()
-    bbox = (args.lat_1, args.lon_1,  args.lat_2, args.lon_2)
-    
-    render_tiles(bbox, args.config, args.tile_dir, args.min_zoom, args.max_zoom, args.process_count)
