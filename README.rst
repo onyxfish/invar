@@ -12,13 +12,12 @@ invar only works with Mapnik2. Instructions for installing Mapnik2 can be found 
 
     pip install invar
 
-**Note:** it can be quite tricky to get Mapnik2 working within virtualenv, so it may be better to install invar in the global site-packages.
+It can be quite tricky to get Mapnik2 working within virtualenv, so it may be better to install invar in the global site-packages.
 
 Usage
 =====
 
-ivtile
-------
+**ivtile**
 
 invar tile sample usage::
 
@@ -28,13 +27,7 @@ Details of each paramters are available via::
 
     ivtile -h
 
-ivframe
--------
-
-TODO
-
-Using with TileMill
--------------------
+**Using with TileMill**
 
 In order to use invar with TileMill you need to convert TileMill's .mml configuration and .mss styles into a Mapnik .xml file. Here is an example of how this might work::
 
@@ -43,13 +36,11 @@ In order to use invar with TileMill you need to convert TileMill's .mml configur
 Credits
 =======
 
-Open Street Map
----------------
+**Open Street Map**
 
 Much of this application is derived from selections of the Open Street Map project--notably `generate_tiles.py <http://svn.openstreetmap.org/applications/rendering/mapnik/generate_tiles.py>`_.
 
-Authors
--------
+**Authors**
 
 * Christopher Groskopf (`@onxyfish <http://twitter.com/onyxfish`_)
 
