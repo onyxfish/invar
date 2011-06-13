@@ -15,7 +15,7 @@ mapnik2.register_fonts('/usr/share/fonts')
 
 DEFAULT_ZOOM = 16
 
-def render_frames(coordinates, config, tile_dir, zoom, process_count):
+def render_frames(tile_parameters, config, tile_dir, zoom, process_count):
     """
     Render a series of centered frames.
     """
@@ -25,10 +25,8 @@ def render_frames(coordinates, config, tile_dir, zoom, process_count):
     tile_queue = multiprocessing.JoinableQueue()
     tile_count = 0
 
-    for i, c in enumerate(coordinates):
-        filename = os.path.join(tile_dir, '%i.png' % i)
-
-        tile_queue.put((filename, c[0], c[1], zoom))
+    for i, t in enumerate(tile_parameters):
+        tile_queue.put(t)
         tile_count += 1
 
     print 'Using %i processes to render %i tiles' % (process_count, tile_count)
@@ -47,7 +45,7 @@ def render_frames(coordinates, config, tile_dir, zoom, process_count):
         for p in processes:
             p.terminate()
 
-def get_coordinates_from_csv(filename):
+def get_tile_parameters_from_csv(filename, zoom, name_column=None):
     """
     Finds latitude and longitude columns in a CSV and extracts coordinate pairs from them.
     """
@@ -60,22 +58,29 @@ def get_coordinates_from_csv(filename):
 
         latitude_index = None
         longitude_index = None
+        name_index = None
 
         for n in ['latitude', 'lat', 'y']:
             if n in headers:
                 latitude_index = headers.index(n)
 
-        if not latitude_index:
+        if latitude_index < 0:
             sys.exit('Unable to find latitude column in CSV.')
 
         for n in ['longitude', 'lon', 'x']:
             if n in headers:
                 longitude_index = headers.index(n)
 
-        if not longitude_index:
+        if longitude_index < 0:
             sys.exit('Unable to find longitude column in CSV.')
 
-        for row in rows:
+        if name_column:
+            name_index = headers.index(name_column)
+
+            if name_index < 0:
+                sys.exit('Column "%s" does not exist in the input CSV.' % name_column)
+
+        for i, row in enumerate(rows):
             try:
                 latitude = float(row[latitude_index].strip())
                 longitude = float(row[longitude_index].strip())
@@ -83,7 +88,12 @@ def get_coordinates_from_csv(filename):
                 print 'Skipping non-numeric latitude/longitude: %s, %s' % (row[latitude_index], row[longitude_index])
                 continue
 
-            coordinates.append((latitude, longitude))
+            if name_index:
+                name = row[name_index]
+            else:
+                name = str(i)
+
+            coordinates.append(('%s.png' % name, latitude, longitude, zoom))
 
     return coordinates
 
@@ -96,16 +106,17 @@ if __name__ == "__main__":
     parser.add_argument('-z', '--zoom', help="Zoom level to render.", type=int, default=DEFAULT_ZOOM)
     parser.add_argument('-p', '--process_count', help="Number of rendering processes to create.", type=int, default=invar.DEFAULT_PROCESS_COUNT)
     parser.add_argument('--csv', help='A CSV file containing at latitude and longitude columns.')
+    parser.add_argument('-n', '--name', help='The name of a column in the CSV file to use as a filename (not including extension).')
 
     args = parser.parse_args()
 
     if args.csv:
-        coordinates = get_coordinates_from_csv(args.csv)
+        tile_parameters = get_tile_parameters_from_csv(args.csv, args.zoom, args.name)
     else:
         if not args.latitude or not args.longitude:
             sys.exit('You must specify a latitude and longitude unless providing the name of a CSV.')
 
-        coordinates = [(args.latitude, args.longitude)]
+        tile_parameters = [('frame.png', args.latitude, args.longitude, args.zoom)]
 
-    render_frames(coordinates, args.config, args.tile_dir, args.zoom, args.process_count)
+    render_frames(tile_parameters, args.config, args.tile_dir, args.zoom, args.process_count)
 

@@ -29,9 +29,14 @@ Details of each parameter are available via::
 
 **ivframe**
 
-invar framer sample user::
+invar framer rendering a single frame::
 
     ivframe map.xml output_directory 32.351 -95.301
+
+    
+invar framer rendering a series frames from latitude/longitude pairs in a CSV file::
+
+    ivframe map.xml output_directory --csv data.csv --name name_column
 
 Details of each parameter are available via::
 
