@@ -29,9 +29,9 @@ Details of each parameter are available via::
 
 **ivframe**
 
-invar framer rendering a single frame to the current directory::
+invar framer rendering a single large frame to the current directory::
 
-    ivframe map.xml . 32.351 -95.301 --name filename_without_extension 
+    ivframe map.xml . 32.351 -95.301 --name filename_without_extension -w 1024 -t 768 
 
     
 invar framer rendering a series frames from latitude/longitude pairs in a CSV file::
