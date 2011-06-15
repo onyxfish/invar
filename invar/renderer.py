@@ -12,7 +12,7 @@ class Renderer(multiprocessing.Process):
     """
     A Mapnik renderer process.
     """
-    def __init__(self, tile_queue, config, width=constants.DEFAULT_TILE_WIDTH, height=constants.DEFAULT_TILE_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE):
+    def __init__(self, tile_queue, config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE):
         multiprocessing.Process.__init__(self)
 
         self.config = config

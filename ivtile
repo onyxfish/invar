@@ -8,6 +8,9 @@ import os
 
 import invar
 
+DEFAULT_MIN_ZOOM = 9
+DEFAULT_MAX_ZOOM = 12
+
 class IVTile(invar.InvarUtility):
     description = 'Render tiles for a given bounding box from a Mapnik2 XML configuration file.'
 
@@ -16,80 +19,72 @@ class IVTile(invar.InvarUtility):
         self.argparser.add_argument('lon_1', type=float, help="Most western longitude")
         self.argparser.add_argument('lat_2', type=float, help="Most southern latitude")
         self.argparser.add_argument('lon_2', type=float, help="Most eastern longitude")
-        self.argparser.add_argument('min_zoom', help="Minimum zoom level to render", type=int, default=invar.DEFAULT_MIN_ZOOM)
-        self.argparser.add_argument('max_zoom', help="Maximum zoom level to render", type=int, default=invar.DEFAULT_MAX_ZOOM)
+        self.argparser.add_argument('min_zoom', help="Minimum zoom level to render", type=int, default=DEFAULT_MIN_ZOOM)
+        self.argparser.add_argument('max_zoom', help="Maximum zoom level to render", type=int, default=DEFAULT_MAX_ZOOM)
 
     def main(self):
-        bbox = (self.args.lat_1, self.args.lon_1,  self.args.lat_2, self.args.lon_2)
-    
-        render_tiles(bbox, self.args.config, self.args.output_dir, self.args.min_zoom, self.args.max_zoom, self.args.processes)
+        if not os.path.isdir(self.args.output_dir):
+             os.mkdir(self.args.output_dir)
 
-def render_tiles(bbox, config, output_dir, min_zoom=invar.DEFAULT_MIN_ZOOM, max_zoom=invar.DEFAULT_MAX_ZOOM, process_count=invar.DEFAULT_PROCESS_COUNT):
-    """
-    Renders a batch of tiles for a given bounding-box.
-    """
-    if not os.path.isdir(output_dir):
-         os.mkdir(output_dir)
+        tile_projection = invar.GoogleProjection(self.args.max_zoom) 
 
-    tile_projection = invar.GoogleProjection(max_zoom) 
+        ll0 = (self.args.lon_1, self.args.lat_1)
+        ll1 = (self.args.lon_2, self.args.lat_2)
 
-    ll0 = (bbox[1], bbox[0])
-    ll1 = (bbox[3], bbox[2])
+        tile_queue = multiprocessing.JoinableQueue()
+        tile_count = 0
 
-    tile_queue = multiprocessing.JoinableQueue()
-    tile_count = 0
+        for zoom in range(self.args.min_zoom, self.args.max_zoom + 1):
+            px0 = tile_projection.fromLLtoPixel(ll0, zoom)
+            px1 = tile_projection.fromLLtoPixel(ll1, zoom)
 
-    for zoom in range(min_zoom, max_zoom + 1):
-        px0 = tile_projection.fromLLtoPixel(ll0, zoom)
-        px1 = tile_projection.fromLLtoPixel(ll1, zoom)
+            tile_x1 = int(px0[0] / 256.0)
+            tile_x2 = int(px1[0] / 256.0) + 1
+            tile_y1 = int(px0[1] / 256.0)
+            tile_y2 = int(px1[1] / 256.0) + 1
 
-        tile_x1 = int(px0[0] / 256.0)
-        tile_x2 = int(px1[0] / 256.0) + 1
-        tile_y1 = int(px0[1] / 256.0)
-        tile_y2 = int(px1[1] / 256.0) + 1
+            zoom_dir = os.path.join(self.args.output_dir, str(zoom))
 
-        zoom_dir = os.path.join(output_dir, str(zoom))
+            if not os.path.isdir(zoom_dir):
+                os.mkdir(zoom_dir)
 
-        if not os.path.isdir(zoom_dir):
-            os.mkdir(zoom_dir)
-
-        for tile_x in range(tile_x1, tile_x2):
-            # Validate x coordinate
-            if (tile_x < 0) or (tile_x >= 2**zoom):
-                continue
-
-            x_dir = os.path.join(zoom_dir, str(tile_x))
-
-            if not os.path.isdir(x_dir):
-                os.mkdir(x_dir)
-
-            for tile_y in range(tile_y1, tile_y2):
-                # Validate y coordinate
-                if (tile_y < 0) or (tile_y >= 2**zoom):
+            for tile_x in range(tile_x1, tile_x2):
+                # Validate x coordinate
+                if (tile_x < 0) or (tile_x >= 2 ** zoom):
                     continue
 
-                filename = os.path.join(x_dir, '%s.png' % str(tile_y))
+                x_dir = os.path.join(zoom_dir, str(tile_x))
 
-                # Submit tile to be rendered into the queue
-                t = (filename, tile_x, tile_y, zoom)
-                tile_queue.put(t)
-                tile_count += 1
+                if not os.path.isdir(x_dir):
+                    os.mkdir(x_dir)
 
-    print 'Using %i processes to render %i tiles' % (process_count, tile_count)
+                for tile_y in range(tile_y1, tile_y2):
+                    # Validate y coordinate
+                    if (tile_y < 0) or (tile_y >= 2 ** zoom):
+                        continue
 
-    processes = []
+                    filename = os.path.join(x_dir, '%s.png' % str(tile_y))
 
-    for i in range(process_count):
-        renderer = invar.TileRenderer(tile_queue, config)
-        renderer.start()
+                    # Submit tile to be rendered into the queue
+                    t = (filename, tile_x, tile_y, zoom)
+                    tile_queue.put(t)
+                    tile_count += 1
 
-        processes.append(renderer)
+        print 'Using %i processes to render %i tiles' % (self.args.process_count, tile_count)
 
-    try:
-        tile_queue.join()
-    except KeyboardInterrupt:
-        for p in processes:
-            p.terminate()
+        processes = []
+
+        for i in range(self.args.process_count):
+            renderer = invar.TileRenderer(tile_queue, self.args.config, self.args.width, self.args.height)
+            renderer.start()
+
+            processes.append(renderer)
+
+        try:
+            tile_queue.join()
+        except KeyboardInterrupt:
+            for p in processes:
+                p.terminate()
 
 if __name__ == "__main__":
     ivtile = IVTile()

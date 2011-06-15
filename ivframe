@@ -7,7 +7,7 @@ import sys
 
 import invar
 
-DEFAULT_ZOOM = 16
+DEFAULT_FRAME_ZOOM = 16
 
 class IVFrame(invar.InvarUtility):
     description = 'Render centered frames from a Mapnik2 XML configuration file. Accepts either a single latitude/longitude pair or the name of a CSV file containing appropriate columns.'
@@ -15,11 +15,12 @@ class IVFrame(invar.InvarUtility):
     def add_arguments(self):
         self.argparser.add_argument('latitude',  help='Latitude to center rendering on.', type=float, nargs='?')
         self.argparser.add_argument('longitude', help='Longitude to center rendering on.', type=float, nargs='?')
-        self.argparser.add_argument('-z', '--zoom', help="Zoom level to render.", type=int, default=DEFAULT_ZOOM)
+        self.argparser.add_argument('-z', '--zoom', help="Zoom level to render.", type=int, default=DEFAULT_FRAME_ZOOM)
         self.argparser.add_argument('--csv', help='A CSV file containing at latitude and longitude columns.')
         self.argparser.add_argument('-n', '--name', help='The name of the output image or the name of a column in the CSV file to use as a filename (not including extension).')
 
     def main(self):
+        # Get a list of tile parameter tuples to be added to the tile queue
         if self.args.csv:
             tile_parameters = get_tile_parameters_from_csv(self.args.csv, self.args.zoom, self.args.name)
         else:
@@ -28,37 +29,31 @@ class IVFrame(invar.InvarUtility):
 
             tile_parameters = [('%s.png' % (self.args.name or 'frame'), self.args.latitude, self.args.longitude, self.args.zoom)]
 
-        render_frames(tile_parameters, self.args.config, self.args.output_dir, self.args.zoom, self.args.processes)
+        if not os.path.isdir(self.args.output_dir):
+             os.mkdir(self.args.output_dir)
 
-def render_frames(tile_parameters, config, output_dir, zoom, process_count):
-    """
-    Render a series of centered frames.
-    """
-    if not os.path.isdir(output_dir):
-         os.mkdir(output_dir)
+        tile_queue = multiprocessing.JoinableQueue()
+        tile_count = 0
 
-    tile_queue = multiprocessing.JoinableQueue()
-    tile_count = 0
+        for i, t in enumerate(tile_parameters):
+            tile_queue.put(t)
+            tile_count += 1
 
-    for i, t in enumerate(tile_parameters):
-        tile_queue.put(t)
-        tile_count += 1
+        print 'Using %i processes to render %i tiles' % (self.args.process_count, tile_count)
 
-    print 'Using %i processes to render %i tiles' % (process_count, tile_count)
+        processes = []
 
-    processes = []
+        for i in range(self.args.process_count):
+            renderer = invar.FrameRenderer(tile_queue, self.args.config, self.args.width, self.args.height)
+            renderer.start()
 
-    for i in range(process_count):
-        renderer = invar.FrameRenderer(tile_queue, config)
-        renderer.start()
+            processes.append(renderer)
 
-        processes.append(renderer)
-
-    try:
-        tile_queue.join()
-    except KeyboardInterrupt:
-        for p in processes:
-            p.terminate()
+        try:
+            tile_queue.join()
+        except KeyboardInterrupt:
+            for p in processes:
+                p.terminate()
 
 def get_tile_parameters_from_csv(filename, zoom, name_column=None):
     """

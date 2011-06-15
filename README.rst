@@ -21,7 +21,7 @@ Usage
 
 invar tiler sample usage::
 
-    ivtile map.xml output_directory 32.4419 -95.393 32.2307 -95.301 10 16 --processes 2
+    ivtile map.xml output_directory 32.4419 -95.393 32.2307 -95.301 10 16 --process_count 2
 
 Details of each parameter are available via::
 
@@ -36,7 +36,7 @@ invar framer rendering a single frame to the current directory::
     
 invar framer rendering a series frames from latitude/longitude pairs in a CSV file::
 
-    ivframe map.xml output_directory --csv data.csv --name name_column  --processes 2
+    ivframe map.xml output_directory --csv data.csv --name name_column  --process_count 2
 
 Details of each parameter are available via::
 
