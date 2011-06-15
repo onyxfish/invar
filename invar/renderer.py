@@ -73,7 +73,7 @@ class TileRenderer(Renderer):
         self.mapnik_map.zoom_to_box(bbox)
         self.mapnik_map.buffer_size = max([half_width, half_height]) 
 
-        # Render image with default Agg renderer
+        # Render image with default renderer
         image = mapnik2.Image(self.width, self.height)
         mapnik2.render(self.mapnik_map, image)
         image.save(filename, self.filetype)
@@ -110,7 +110,7 @@ class FrameRenderer(Renderer):
         self.mapnik_map.zoom_to_box(bbox)
         self.mapnik_map.buffer_size = max([half_width, half_height]) 
 
-        # Render image with default Agg renderer
+        # Render image with default renderer
         image = mapnik2.Image(self.width, self.height)
         mapnik2.render(self.mapnik_map, image)
         image.save(filename, self.filetype)
