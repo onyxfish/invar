@@ -19,6 +19,8 @@ Usage
 
 **ivtile**
 
+ivtile renders continous tiles of the map, such as those used by Google Maps, Open Street Map, or any other "slippy" map provider.
+
 invar tiler sample usage::
 
     ivtile map.xml output_directory 32.4419 -95.393 32.2307 -95.301 10 16 --process_count 2
@@ -28,6 +30,8 @@ Details of each parameter are available via::
     ivtile -h
 
 **ivframe**
+
+ivframe renders discontinous frames of the map centered on locations, such as an individual map for the area around each of a hundred bus stops.
 
 invar framer rendering a single large frame to the current directory::
 
