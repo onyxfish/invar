@@ -1,0 +1,71 @@
+#!/usr/bin/python
+
+import argparse
+import os
+
+from boto.s3.connection import S3Connection
+from boto.s3.key import Key
+import eventlet
+eventlet.monkey_patch()
+
+import invar
+
+class IVS3(invar.InvarUtility):
+    description = 'Upload a directory of images to S3 concurrently.'
+
+    def _init_common_parser(self):
+        """
+        Override default parser behavior.
+        """
+        self.argparser = argparse.ArgumentParser(description=self.description, epilog=self.epilog)
+
+    def add_arguments(self):
+        self.argparser.add_argument('upload_dir',  help='Directory to be uploaded.')
+        self.argparser.add_argument('bucket',  help='Bucket in which to put files.')
+        self.argparser.add_argument('-c', '--concurrency', help='Number of concurrent uploads.', type=int, default=32)
+        self.argparser.add_argument('-P', '--acl-public', help='Set uploaded files as public.', dest='public', action='store_true')
+        self.argparser.add_argument('--acl-private', help='Set uploaded files as private (default).', dest='private', action='store_true')
+        self.argparser.add_argument('--add-header', help='Add a given HTTP header to each file. Use NAME:VALUE format. May be specified multiple times.', dest='headers', action='append')
+
+    def main(self):
+        self.headers = dict([h.split(':') for h in self.args.headers]) if self.args.headers else None
+
+        pile = eventlet.GreenPile(self.args.concurrency)
+
+        for key_name, absolute_path in self.find_file_paths():
+            pile.spawn(self.upload, key_name, absolute_path)
+
+    def find_file_paths(self):
+        """
+        A generator function that recursively finds all files in the upload directory.
+        """
+        for root, dirs, files in os.walk(self.args.upload_dir):
+            rel_path = os.path.relpath(root, self.args.upload_dir)
+
+            for f in files:
+                if rel_path == '.':
+                    yield (f, os.path.join(root, f))
+                else:
+                    yield (os.path.join(rel_path, f), os.path.join(root, f))
+
+    def upload(self, key_name, absolute_path):
+        conn = S3Connection()
+        bucket = conn.get_bucket(self.args.bucket)
+
+        k = Key(bucket)
+        k.key = key_name 
+
+        if self.args.public and not self.args.private:
+            policy = 'public-read'
+        else:
+            policy = 'private'
+
+        k.set_contents_from_filename(absolute_path, headers=self.headers, policy=policy)
+
+        print 'Uploaded %s' % key_name
+
+if __name__ == "__main__":
+    ivs3 = IVS3()
+    ivs3.main()
+
+
