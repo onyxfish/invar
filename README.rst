@@ -48,13 +48,13 @@ Details of each parameter are available via::
 
 **ivs3**
 
-ivs3 pushes a collection of tiles (or anything, really) into an Amazon S3 bucket.
+ivs3 pushes a collection of tiles (or anything, really) into an Amazon S3 bucket using concurrent connections (so its super-fast).
 
-Sample usage pushing a tiles directory into a bucket called "test_bucket".::
+Sample usage pushing a tiles directory into a bucket called "test_bucket"::
 
     ivs3 tiles_directory test_bucket -P
 
-The -P flag makes the uploaded files public. For a complete list of flags run::
+You must have your Amazon Web Services access credentials defined in the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables. The -P flag makes the uploaded files public. For a complete list of flags run::
 
     ivs3 -h
 
