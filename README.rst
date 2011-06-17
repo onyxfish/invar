@@ -46,6 +46,18 @@ Details of each parameter are available via::
 
     ivframe -h
 
+**ivs3**
+
+ivs3 pushes a collection of tiles (or anything, really) into an Amazon S3 bucket.
+
+Sample usage pushing a tiles directory into a bucket called "test_bucket".::
+
+    ivs3 tiles_directory test_bucket -P
+
+The -P flag makes the uploaded files public. For a complete list of flags run::
+
+    ivs3 -h
+
 **Using with TileMill**
 
 In order to use invar with `TileMill <http://tilemill.com/>`_ you need to convert TileMill's .mml configuration and .mss styles into a Mapnik .xml file. Here is an example of how to do this::
