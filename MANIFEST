@@ -4,6 +4,7 @@ ivframe
 ivs3
 setup.py
 invar/__init__.py
+invar/cli.py
 invar/constants.py
 invar/projections.py
 invar/renderer.py
