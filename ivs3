@@ -45,6 +45,9 @@ class IVS3(invar.InvarUtility):
         for key_name, absolute_path in self.find_file_paths():
             pile.spawn(self.upload, key_name, absolute_path)
 
+        # Wait for all greenlets to finish
+        list(pile)
+
     def find_file_paths(self):
         """
         A generator function that recursively finds all files in the upload directory.
