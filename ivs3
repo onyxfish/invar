@@ -21,13 +21,23 @@ class IVS3(invar.InvarUtility):
 
     def add_arguments(self):
         self.argparser.add_argument('upload_dir',  help='Directory to be uploaded.')
-        self.argparser.add_argument('bucket',  help='Bucket in which to put files.')
+        self.argparser.add_argument('bucket',  help='Bucket in which to put files. You may also specify a path component (e.g. a subdirectory to put the files in).')
         self.argparser.add_argument('-c', '--concurrency', help='Number of concurrent uploads.', type=int, default=32)
         self.argparser.add_argument('-P', '--acl-public', help='Set uploaded files as public.', dest='public', action='store_true')
         self.argparser.add_argument('--acl-private', help='Set uploaded files as private (default).', dest='private', action='store_true')
         self.argparser.add_argument('--add-header', help='Add a given HTTP header to each file. Use NAME:VALUE format. May be specified multiple times.', dest='headers', action='append')
+        self.argparser.add_argument('-v', '--verbose', action='store_true', help='Display detailed error messages.')
 
     def main(self):
+        if '/' in self.args.bucket:
+            self.bucket, self.upload_path = self.args.bucket.split('/', 1)
+
+            if self.upload_path[-1] != '/':
+                self.upload_path += '/'
+        else:
+            self.bucket = self.args.bucket
+            self.upload_path = None
+
         self.headers = dict([h.split(':') for h in self.args.headers]) if self.args.headers else None
 
         pile = eventlet.GreenPile(self.args.concurrency)
@@ -50,10 +60,13 @@ class IVS3(invar.InvarUtility):
 
     def upload(self, key_name, absolute_path):
         conn = S3Connection()
-        bucket = conn.get_bucket(self.args.bucket)
+        bucket = conn.get_bucket(self.bucket)
 
         k = Key(bucket)
         k.key = key_name 
+
+        if self.upload_path:
+            k.key = self.upload_path + k.key
 
         if self.args.public and not self.args.private:
             policy = 'public-read'

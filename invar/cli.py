@@ -21,8 +21,9 @@ class InvarUtility(object):
         self.args = self.argparser.parse_args()
         self._install_exception_handler()
 
-        for font_path in self.args.font_paths:
-            mapnik2.register_fonts(font_path)
+        if hasattr(self.args, 'font_paths'):
+            for font_path in self.args.font_paths:
+                mapnik2.register_fonts(font_path)
 
     def add_arguments(self):
         """
@@ -52,6 +53,7 @@ class InvarUtility(object):
         self.argparser.add_argument('-w', '--width', help="Width of images to render.", type=int, default=constants.DEFAULT_WIDTH)
         self.argparser.add_argument('-t', '--height', help="Height of images to render.", type=int, default=constants.DEFAULT_HEIGHT)
         self.argparser.add_argument('--font-path', help='Add a directory to the paths which Mapnik will search by fonts.', dest='font_paths', action='append', default=['/Library/Fonts/', '/usr/share/fonts'])
+        self.argparser.add_argument('-v', '--verbose', action='store_true', help='Display detailed error messages.')
 
     def _install_exception_handler(self):
         """
