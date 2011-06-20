@@ -1,5 +1,4 @@
 *.swp
 .DS_Store
 *.pyc
-MANIFEST
 dist
