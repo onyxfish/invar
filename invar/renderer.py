@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import multiprocessing
+import os
 import Queue
 
 import mapnik2
@@ -12,14 +13,15 @@ class Renderer(multiprocessing.Process):
     """
     A Mapnik renderer process.
     """
-    def __init__(self, tile_queue, config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE):
+    def __init__(self, tile_queues, config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, skip_existing=False):
         multiprocessing.Process.__init__(self)
 
         self.config = config
-        self.tile_queue = tile_queue
+        self.tile_queues = tile_queues
         self.width = width
         self.height = height
         self.filetype = filetype
+        self.skip_existing = skip_existing
 
     def run(self):
         self.mapnik_map = mapnik2.Map(self.width, self.height)
@@ -29,13 +31,32 @@ class Renderer(multiprocessing.Process):
         self.tile_projection = projections.GoogleProjection()  
 
         while True:
-            try:
-                tile_parameters = self.tile_queue.get_nowait()
-            except Queue.Empty:
-                break
+            tile_parameters = None
+
+            # Try to fetch a tile from any queue
+            for tile_queue in self.tile_queues:
+                try:
+                    tile_parameters = tile_queue.get_nowait()
+                    break 
+                except Queue.Empty:
+                    pass
+
+            # Couldn't get tile parameters from any queue--all done
+            if not tile_parameters:
+                return
+
+            # Skip rendering existing tiles
+            if self.skip_existing:
+                filename = tile_parameters[0]
+
+                if os.path.exists(filename):
+                    print 'Skipping %s' % (filename)
+                    tile_queue.task_done()
+
+                    continue
 
             self.render(*tile_parameters)
-            self.tile_queue.task_done()
+            tile_queue.task_done()
 
     def render(self):
         """

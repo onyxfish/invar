@@ -11,6 +11,8 @@ import invar
 DEFAULT_MIN_ZOOM = 9
 DEFAULT_MAX_ZOOM = 12
 
+MAX_QUEUE_SIZE = 20000
+
 class IVTile(invar.InvarUtility):
     description = 'Render tiles for a given bounding box from a Mapnik2 XML configuration file.'
 
@@ -31,7 +33,8 @@ class IVTile(invar.InvarUtility):
         ll0 = (self.args.lon_1, self.args.lat_1)
         ll1 = (self.args.lon_2, self.args.lat_2)
 
-        tile_queue = multiprocessing.JoinableQueue()
+        tile_queues = []
+        tile_queue = multiprocessing.JoinableQueue(maxsize=MAX_QUEUE_SIZE) 
         tile_count = 0
 
         for zoom in range(self.args.min_zoom, self.args.max_zoom + 1):
@@ -67,6 +70,13 @@ class IVTile(invar.InvarUtility):
 
                     # Submit tile to be rendered into the queue
                     t = (filename, tile_x, tile_y, zoom)
+
+                    # Because mulitprocessing.JoinableQueue has a fixed maxsize, we instantiate
+                    # an array of such queues and fill them iteratively
+                    if tile_count != 0 and (tile_count % MAX_QUEUE_SIZE) == 0:
+                        tile_queues.append(tile_queue)
+                        tile_queue = multiprocessing.JoinableQueue(maxsize=MAX_QUEUE_SIZE)
+
                     tile_queue.put(t)
                     tile_count += 1
 
@@ -75,13 +85,14 @@ class IVTile(invar.InvarUtility):
         processes = []
 
         for i in range(self.args.process_count):
-            renderer = invar.TileRenderer(tile_queue, self.args.config, self.args.width, self.args.height)
+            renderer = invar.TileRenderer(tile_queues, self.args.config, self.args.width, self.args.height, skip_existing=self.args.skip_existing)
             renderer.start()
 
             processes.append(renderer)
 
         try:
-            tile_queue.join()
+            for tile_queue in tile_queues:
+                tile_queue.join()
         except KeyboardInterrupt:
             for p in processes:
                 p.terminate()
