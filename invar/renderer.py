@@ -13,13 +13,14 @@ class Renderer(multiprocessing.Process):
     """
     A Mapnik renderer process.
     """
-    def __init__(self, tile_queues, config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, skip_existing=False):
+    def __init__(self, tile_queues, config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, buffer_size=None, skip_existing=False):
         multiprocessing.Process.__init__(self)
 
         self.config = config
         self.tile_queues = tile_queues
         self.width = width
         self.height = height
+        self.buffer_size = buffer_size if buffer_size else max(width, height)
         self.filetype = filetype
         self.skip_existing = skip_existing
 
@@ -92,7 +93,7 @@ class TileRenderer(Renderer):
         bbox = mapnik2.Box2d(c0.x, c0.y, c1.x, c1.y)
 
         self.mapnik_map.zoom_to_box(bbox)
-        self.mapnik_map.buffer_size = max([half_width, half_height]) 
+        self.mapnik_map.buffer_size = self.buffer_size 
 
         # Render image with default renderer
         image = mapnik2.Image(self.width, self.height)
@@ -129,7 +130,7 @@ class FrameRenderer(Renderer):
         bbox = mapnik2.Box2d(c0.x, c0.y, c1.x, c1.y)
 
         self.mapnik_map.zoom_to_box(bbox)
-        self.mapnik_map.buffer_size = max([half_width, half_height]) 
+        self.mapnik_map.buffer_size = self.buffer_size
 
         # Render image with default renderer
         image = mapnik2.Image(self.width, self.height)

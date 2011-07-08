@@ -52,6 +52,7 @@ class InvarUtility(object):
         self.argparser.add_argument('-p', '--process_count', help="Number of rendering processes to create.", type=int, default=constants.DEFAULT_PROCESS_COUNT)
         self.argparser.add_argument('-w', '--width', help="Width of images to render.", type=int, default=constants.DEFAULT_WIDTH)
         self.argparser.add_argument('-t', '--height', help="Height of images to render.", type=int, default=constants.DEFAULT_HEIGHT)
+        self.argparser.add_argument('-b', '--buffer', type=int, help="The buffer drawn around the image during rendering. Defaults to the width or height, whichever is greater, however, it may not be increased when rendering large elements at small zoom levels.")
         self.argparser.add_argument('--font-path', help='Add a directory to the paths which Mapnik will search by fonts.', dest='font_paths', action='append', default=['/Library/Fonts/', '/usr/share/fonts'])
         self.argparser.add_argument('-s', '--skip-existing', dest='skip_existing', action='store_true', help='Skip rendering tiles which already exist.')
         self.argparser.add_argument('-v', '--verbose', action='store_true', help='Display detailed error messages.')
