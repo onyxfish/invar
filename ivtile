@@ -80,6 +80,10 @@ class IVTile(invar.InvarUtility):
                     tile_queue.put(t)
                     tile_count += 1
 
+            # Append first (or last) queue to list
+            if (tile_count % MAX_QUEUE_SIZE) != 0:
+                tile_queues.append(tile_queue)
+
         print 'Using %i processes to render %i tiles' % (self.args.process_count, tile_count)
 
         processes = []
