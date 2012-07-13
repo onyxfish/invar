@@ -4,7 +4,7 @@ import multiprocessing
 import os
 import Queue
 
-import mapnik2
+import mapnik
 
 import constants
 import projections
@@ -25,10 +25,10 @@ class Renderer(multiprocessing.Process):
         self.skip_existing = skip_existing
 
     def run(self):
-        self.mapnik_map = mapnik2.Map(self.width, self.height)
-        mapnik2.load_map(self.mapnik_map, self.config, True)
+        self.mapnik_map = mapnik.Map(self.width, self.height)
+        mapnik.load_map(self.mapnik_map, self.config, True)
 
-        self.map_projection = mapnik2.Projection(self.mapnik_map.srs)
+        self.map_projection = mapnik.Projection(self.mapnik_map.srs)
         self.tile_projection = projections.GoogleProjection()  
 
         while True:
@@ -86,18 +86,18 @@ class TileRenderer(Renderer):
         ll1 = self.tile_projection.fromPixelToLL(px1, zoom);
         
         # Convert LatLng to map coords
-        c0 = self.map_projection.forward(mapnik2.Coord(ll0[0], ll0[1]))
-        c1 = self.map_projection.forward(mapnik2.Coord(ll1[0], ll1[1]))
+        c0 = self.map_projection.forward(mapnik.Coord(ll0[0], ll0[1]))
+        c1 = self.map_projection.forward(mapnik.Coord(ll1[0], ll1[1]))
 
         # Create bounding box for the render
-        bbox = mapnik2.Box2d(c0.x, c0.y, c1.x, c1.y)
+        bbox = mapnik.Box2d(c0.x, c0.y, c1.x, c1.y)
 
         self.mapnik_map.zoom_to_box(bbox)
         self.mapnik_map.buffer_size = self.buffer_size 
 
         # Render image with default renderer
-        image = mapnik2.Image(self.width, self.height)
-        mapnik2.render(self.mapnik_map, image)
+        image = mapnik.Image(self.width, self.height)
+        mapnik.render(self.mapnik_map, image)
         image.save(filename, self.filetype)
 
 class FrameRenderer(Renderer):
@@ -123,16 +123,17 @@ class FrameRenderer(Renderer):
         ll1 = self.tile_projection.fromPixelToLL(px1, zoom);
         
         # Convert LatLng to map coords
-        c0 = self.map_projection.forward(mapnik2.Coord(ll0[0], ll0[1]))
-        c1 = self.map_projection.forward(mapnik2.Coord(ll1[0], ll1[1]))
+        c0 = self.map_projection.forward(mapnik.Coord(ll0[0], ll0[1]))
+        c1 = self.map_projection.forward(mapnik.Coord(ll1[0], ll1[1]))
 
         # Create bounding box for the render
-        bbox = mapnik2.Box2d(c0.x, c0.y, c1.x, c1.y)
+        bbox = mapnik.Box2d(c0.x, c0.y, c1.x, c1.y)
 
         self.mapnik_map.zoom_to_box(bbox)
         self.mapnik_map.buffer_size = self.buffer_size
 
         # Render image with default renderer
-        image = mapnik2.Image(self.width, self.height)
-        mapnik2.render(self.mapnik_map, image)
+        image = mapnik.Image(self.width, self.height)
+        mapnik.render(self.mapnik_map, image)
         image.save(filename, self.filetype)
+

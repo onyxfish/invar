@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-import mapnik2
+import mapnik
 
 import constants
 
@@ -23,7 +23,7 @@ class InvarUtility(object):
 
         if hasattr(self.args, 'font_paths'):
             for font_path in self.args.font_paths:
-                mapnik2.register_fonts(font_path)
+                mapnik.register_fonts(font_path)
 
     def add_arguments(self):
         """
