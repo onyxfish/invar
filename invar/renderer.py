@@ -9,6 +9,9 @@ import mapnik
 import constants
 import projections
 
+import json
+from os.path import splitext
+
 class Renderer(multiprocessing.Process):
     """
     A Mapnik renderer process.
@@ -69,6 +72,12 @@ class TileRenderer(Renderer):
     """
     Renderer for tiles. 
     """
+    def __init__(self, tile_queues, config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, buffer_size=None, skip_existing=False, **kwargs):
+        super(TileRenderer, self).__init__(tile_queues, config, width, height, filetype, buffer_size, skip_existing)
+        self.grid = kwargs.get('grid',False)
+        self.key =  kwargs.get('key',None)
+        self.fields =  kwargs.get('fields',None)
+
     def render(self, filename, tile_x, tile_y, zoom):
         """
         Render a single tile to a given filename.
@@ -99,6 +108,30 @@ class TileRenderer(Renderer):
         image = mapnik.Image(self.width, self.height)
         mapnik.render(self.mapnik_map, image)
         image.save(filename, self.filetype)
+        
+        if self.grid:
+            if self.key:
+                grid = mapnik.Grid(self.width, self.height)
+            else:
+                grid = mapnik.Grid(self.width, self.height, key=self.key)
+
+            fields = []
+            if self.fields:
+                fields.extend(self.fields)
+
+            mapnik.render_layer(self.mapnik_map,grid,layer=0,fields=fields)
+            # then encode the grid array as utf, resample to 1/4 the size, and dump features
+            # this comes from https://github.com/springmeyer/gridsforkids/blob/master/generate_tiles.py 
+            # with little consideration
+            grid_utf = grid.encode('utf', resolution=4, features=True)
+
+            # client code uses jsonp, so fake by wrapping in grid() callback
+            base, ext = splitext(filename)
+            grid_filename = "%s.grid.json" % base
+            print 'Rendering %s' % (grid_filename)
+            open(grid_filename,'wb').write('grid(' + json.dumps(grid_utf) + ')')
+            
+            
 
 class FrameRenderer(Renderer):
     """
