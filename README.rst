@@ -62,7 +62,9 @@ You must have your Amazon Web Services access credentials defined in the AWS_ACC
 
 In order to use invar with `TileMill <http://tilemill.com/>`_ you need to convert TileMill's .mml configuration and .mss styles into a Mapnik .xml file. Here is an example of how to do this::
 
-    tilemill/bin/node tilemill/bin/carto map.mml > map.xml
+    $TILEMILL_PATH/node_modules/carto/bin/carto map.mml > map.xml
+
+Note: some versions of TileMill (0.10.1) print debug statements to STDOUT which can mess up the output of this conversion. If you see a line at the top of your output XML file like ``[millstone] finished processing '/path/to/my/file'`` then prefix your compile command with ``NODE_ENV=foo`` which will disable these statements.
 
 Credits
 =======
