@@ -1,4 +1,4 @@
-!#/usr/bin/env python
+#!/usr/bin/env python
 
 # Inspired by generate_tiles.py, part of the Open Street Map project:
 # http://svn.openstreetmap.org/applications/rendering/mapnik/generate_tiles.py
