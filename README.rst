@@ -8,11 +8,11 @@ invar is named after a `metal alloy <http://en.wikipedia.org/wiki/Invar>`_ frequ
 Installation
 ============
 
-invar only works with Mapnik2. Instructions for installing Mapnik2 can be found `here <http://trac.mapnik.org/wiki/Mapnik2>`_. Once you have Mapnik2 installed you can install invar using pip::
+invar only works with Mapnik2. Instructions for installing Mapnik2 can be found `here <https://github.com/mapnik/mapnik/wiki/Mapnik-Installation>`_. Once you have Mapnik2 installed you can install invar using pip::
 
     pip install invar
 
-It can be quite tricky to get Mapnik2 working within virtualenv, so it may be better to install invar in the global site-packages.
+It can be quite tricky to get Mapnik2 working within virtualenv, so it may be simpler/better to install invar in the global site-packages.
 
 Usage
 =====
