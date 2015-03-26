@@ -23,22 +23,22 @@ class IVTile(invar.InvarUtility):
         self.argparser.add_argument('lon_2', type=float, help="Most eastern longitude")
         self.argparser.add_argument('min_zoom', help="Minimum zoom level to render", type=int, default=DEFAULT_MIN_ZOOM)
         self.argparser.add_argument('max_zoom', help="Maximum zoom level to render", type=int, default=DEFAULT_MAX_ZOOM)
-        
+
         self.argparser.add_argument('-g', '--grid', action="store_true", help="Force grid JSON to be rendered alongside each tile. If -k or -f options are provided, this is inferred and need not be specified.")
         self.argparser.add_argument('-k', '--key', help="For grid rendering, the column in the associated dataset which is a unique ID for a feature. If not specified, will use mapnik default ('__id__')")
         self.argparser.add_argument('-f', '--fields', help="For grid rendering, a comma separated list of fields associated with each feature which will be included in grid JSON.")
-        
+
     def main(self):
         if not os.path.isdir(self.args.output_dir):
              os.mkdir(self.args.output_dir)
 
-        tile_projection = invar.GoogleProjection(self.args.max_zoom) 
+        tile_projection = invar.GoogleProjection(self.args.max_zoom)
 
         ll0 = (self.args.lon_1, self.args.lat_1)
         ll1 = (self.args.lon_2, self.args.lat_2)
 
         tile_queues = []
-        tile_queue = multiprocessing.JoinableQueue(maxsize=MAX_QUEUE_SIZE) 
+        tile_queue = multiprocessing.JoinableQueue(maxsize=MAX_QUEUE_SIZE)
         tile_count = 0
 
         for zoom in range(self.args.min_zoom, self.args.max_zoom + 1):
@@ -95,10 +95,10 @@ class IVTile(invar.InvarUtility):
             fields = self.args.fields.split(",")
         except:
             fields = None
-            
+
         for i in range(self.args.process_count):
             grid = (self.args.grid or self.args.fields or self.args.key)
-            renderer = invar.TileRenderer(tile_queues, self.args.config, self.args.width, self.args.height, buffer_size=self.args.buffer, skip_existing=self.args.skip_existing, grid=grid, key=self.args.key, fields=fields)
+            renderer = invar.TileRenderer(self.args.output_dir, tile_queues, self.args.config, self.args.width, self.args.height, buffer_size=self.args.buffer, skip_existing=self.args.skip_existing, grid=grid, key=self.args.key, fields=fields)
             renderer.start()
 
             processes.append(renderer)
@@ -113,4 +113,3 @@ class IVTile(invar.InvarUtility):
 if __name__ == "__main__":
     ivtile = IVTile()
     ivtile.main()
-

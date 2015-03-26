@@ -14,9 +14,10 @@ class Renderer(multiprocessing.Process):
     """
     A Mapnik renderer process.
     """
-    def __init__(self, tile_queue, config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, buffer_size=None, skip_existing=False):
+    def __init__(self, output_dir, tile_queue, config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, buffer_size=None, skip_existing=False):
         multiprocessing.Process.__init__(self)
 
+        self.output_dir = output_dir
         self.config = config
         self.tile_queue = tile_queue
         self.width = width
@@ -48,7 +49,7 @@ class Renderer(multiprocessing.Process):
             if self.skip_existing:
                 filename = tile_parameters[0]
 
-                if os.path.exists(filename):
+                if os.path.exists(os.path.join(self.output_dir, filename)):
                     print 'Skipping %s' % (filename)
                     self.tile_queue.task_done()
 
@@ -67,8 +68,8 @@ class TileRenderer(Renderer):
     """
     Renderer for tiles.
     """
-    def __init__(self, tile_queue, config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, buffer_size=None, skip_existing=False, **kwargs):
-        super(TileRenderer, self).__init__(tile_queue, config, width, height, filetype, buffer_size, skip_existing)
+    def __init__(self, output_dir, tile_queue, config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, buffer_size=None, skip_existing=False, **kwargs):
+        super(TileRenderer, self).__init__(output_dir, tile_queue, config, width, height, filetype, buffer_size, skip_existing)
         self.grid = kwargs.get('grid', False)
         self.key =  kwargs.get('key', None)
         self.fields =  kwargs.get('fields', None)
@@ -102,7 +103,7 @@ class TileRenderer(Renderer):
         # Render image with default renderer
         image = mapnik.Image(self.width, self.height)
         mapnik.render(self.mapnik_map, image)
-        image.save(filename, self.filetype)
+        image.save(os.path.join(self.output_dir, filename), self.filetype)
 
         if self.grid:
             if self.key:
@@ -126,7 +127,7 @@ class TileRenderer(Renderer):
             grid_filename = '%s.grid.json' % base
             print 'Rendering %s' % (grid_filename)
 
-            with open(grid_filename,'wb') as f:
+            with open(os.path.join(self.output_dir, grid_filename),'wb') as f:
                 f.write('grid(' + json.dumps(grid_utf) + ')')
 
 
@@ -166,4 +167,4 @@ class FrameRenderer(Renderer):
         # Render image with default renderer
         image = mapnik.Image(self.width, self.height)
         mapnik.render(self.mapnik_map, image)
-        image.save(filename, self.filetype)
+        image.save(os.path.join(self.output_dir, filename), self.filetype)
