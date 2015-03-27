@@ -5,6 +5,7 @@ import multiprocessing
 import os
 import Queue
 
+import cairo
 import mapnik
 
 import constants
@@ -100,10 +101,14 @@ class TileRenderer(Renderer):
         self.mapnik_map.zoom_to_box(bbox)
         self.mapnik_map.buffer_size = self.buffer_size
 
-        # Render image with default renderer
-        image = mapnik.Image(self.width, self.height)
-        mapnik.render(self.mapnik_map, image)
-        image.save(os.path.join(self.output_dir, filename), self.filetype)
+        if self.filetype == 'svg' or 'pdf':
+            surface = cairo.SVGSurface(os.path.join(self.output_dir, filename), self.width, self.height)
+            mapnik.render(self.mapnik_map, surface)
+            surface.finish()
+        else:
+            image = mapnik.Image(self.width, self.height)
+            mapnik.render(self.mapnik_map, image)
+            image.save(os.path.join(self.output_dir, filename), self.filetype)
 
         if self.grid:
             if self.key:
@@ -164,7 +169,11 @@ class FrameRenderer(Renderer):
         self.mapnik_map.zoom_to_box(bbox)
         self.mapnik_map.buffer_size = self.buffer_size
 
-        # Render image with default renderer
-        image = mapnik.Image(self.width, self.height)
-        mapnik.render(self.mapnik_map, image)
-        image.save(os.path.join(self.output_dir, filename), self.filetype)
+        if self.filetype == 'svg' or 'pdf':
+            surface = cairo.SVGSurface(os.path.join(self.output_dir, filename), self.width, self.height)
+            mapnik.render(self.mapnik_map, surface)
+            surface.finish()
+        else:
+            image = mapnik.Image(self.width, self.height)
+            mapnik.render(self.mapnik_map, image)
+            image.save(os.path.join(self.output_dir, filename), self.filetype)

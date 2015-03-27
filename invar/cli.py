@@ -49,6 +49,7 @@ class InvarUtility(object):
 
         self.argparser.add_argument('config', help="Mapnik2 XML configuration file.")
         self.argparser.add_argument('output_dir', help="Destination directory for output.")
+        self.argparser.add_argument('-f', '--file_type', help='Output file type. Defaults to "png256".')
         self.argparser.add_argument('-p', '--process_count', help="Number of rendering processes to create.", type=int, default=constants.DEFAULT_PROCESS_COUNT)
         self.argparser.add_argument('-w', '--width', help="Width of images to render.", type=int, default=constants.DEFAULT_WIDTH)
         self.argparser.add_argument('-t', '--height', help="Height of images to render.", type=int, default=constants.DEFAULT_HEIGHT)
@@ -68,4 +69,3 @@ class InvarUtility(object):
                 print value
 
         sys.excepthook = handler
-

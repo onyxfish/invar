@@ -17,7 +17,7 @@ class IVFrame(invar.InvarUtility):
         self.argparser.add_argument('longitude', help='Longitude to center rendering on.', type=float, nargs='?')
         self.argparser.add_argument('-z', '--zoom', help="Zoom level to render.", type=int, default=DEFAULT_FRAME_ZOOM)
         self.argparser.add_argument('--csv', help='A CSV file containing at latitude and longitude columns.')
-        self.argparser.add_argument('-n', '--name', help='The name of the output image or the name of a column in the CSV file to use as a filename (not including extension).')
+        self.argparser.add_argument('-n', '--name', help='The name of the output image or the name of a column in the CSV file to use as a filename.')
 
     def main(self):
         # Get a list of tile parameter tuples to be added to the tile queue
@@ -27,7 +27,7 @@ class IVFrame(invar.InvarUtility):
             if not self.args.latitude or not self.args.longitude:
                 sys.exit('You must specify a latitude and longitude unless providing the name of a CSV.')
 
-            tile_parameters = [('%s.png' % (self.args.name or 'frame'), self.args.latitude, self.args.longitude, self.args.zoom)]
+            tile_parameters = [(self.args.name or 'frame', self.args.latitude, self.args.longitude, self.args.zoom)]
 
         if not os.path.isdir(self.args.output_dir):
              os.mkdir(self.args.output_dir)
@@ -44,7 +44,7 @@ class IVFrame(invar.InvarUtility):
         processes = []
 
         for i in range(self.args.process_count):
-            renderer = invar.FrameRenderer(self.args.output_dir, tile_queue, self.args.config, self.args.width, self.args.height, buffer_size=self.args.buffer, skip_existing=self.args.skip_existing)
+            renderer = invar.FrameRenderer(self.args.output_dir, tile_queue, self.args.config, self.args.width, self.args.height, filetype=self.args.file_type, buffer_size=self.args.buffer, skip_existing=self.args.skip_existing)
             renderer.start()
 
             processes.append(renderer)
@@ -99,11 +99,11 @@ def get_tile_parameters_from_csv(filename, zoom, name_column=None):
                 continue
 
             if name_index:
-                name = row[name_index]
+                filename = row[name_index]
             else:
-                name = str(i)
+                filename = str(i)
 
-            yield ('%s.png' % name, latitude, longitude, zoom)
+            yield (filename, latitude, longitude, zoom)
 
 if __name__ == "__main__":
     ivframe = IVFrame()
