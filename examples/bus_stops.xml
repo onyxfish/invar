@@ -1,0 +1,31 @@
+<Map background-color="#ffffff" srs="+init=epsg:4326">
+
+    <Style name="bus-stop-styles">
+        <Rule>
+            <PointSymbolizer />
+        </Rule>
+    </Style>
+
+    <Style name="city-styles">
+        <Rule>
+            <LineSymbolizer stroke="#ff0000" stroke-width="2" />
+        </Rule>
+    </Style>
+
+    <Layer name="bus-stops" status="on" srs="+init=epsg:4326">
+        <StyleName>bus-stop-styles</StyleName>
+        <Datasource>
+            <Parameter name="type">shape</Parameter>
+            <Parameter name="file">bus_stops_4326/BUS_STOPS.shp</Parameter>
+        </Datasource>
+    </Layer>
+
+    <Layer name="city" status="on" srs="+init=epsg:4326">
+        <StyleName>city-styles</StyleName>
+        <Datasource>
+            <Parameter name="type">shape</Parameter>
+            <Parameter name="file">city_limits_4326/City Limits.shp</Parameter>
+        </Datasource>
+    </Layer>
+
+</Map>

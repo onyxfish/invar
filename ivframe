@@ -27,7 +27,9 @@ class IVFrame(invar.InvarUtility):
             if not self.args.latitude or not self.args.longitude:
                 sys.exit('You must specify a latitude and longitude unless providing the name of a CSV.')
 
-            tile_parameters = [(self.args.name or 'frame', self.args.latitude, self.args.longitude, self.args.zoom)]
+            filename = self.args.name or 'frame.%s' % invar.constants.FILE_TYPE_EXTS[self.args.file_type]
+
+            tile_parameters = [(filename, self.args.latitude, self.args.longitude, self.args.zoom)]
 
         if not os.path.isdir(self.args.output_dir):
              os.mkdir(self.args.output_dir)
