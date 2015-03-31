@@ -26,7 +26,7 @@ ivtile renders continous tiles of the map, such as those used by Google Maps, Op
 
 invar tiler sample usage::
 
-    ivtile map.xml output_directory 32.4419 -95.393 32.2307 -95.301 10 16 --process_count 2
+    ivtile examples/bus_stops.xml tiles 32.6 -95.6 32.00 -95.0 8 10 --process-count 2
 
 Details of each parameter are available via::
 
@@ -39,8 +39,7 @@ ivframe renders discontinous frames of the map centered on locations, such as an
 
 ivframe rendering a single large frame to the current directory::
 
-    ivframe map.xml . 32.351 -95.301 --name filename_without_extension -w 1024 -t 768
-
+    ivframe examples/bus_stops.xml . 32.35 -95.3 -z 11 -w 512 -t 512
 
 ivframe supports rendering a series frames from latitude/longitude pairs in a CSV file::
 
