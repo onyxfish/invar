@@ -1,6 +1,9 @@
 0.1.0
 -----
 
-* Add CHANGELOG
-* Add AUTHORS
-* Add docs
+* Add CHANGELOG.
+* Add AUTHORS.
+* Add docs.
+* Fix several issues with broken tile queues. (#6)
+* Add SVG output support. (#13)
+* Update dependency version requirements. (#10)

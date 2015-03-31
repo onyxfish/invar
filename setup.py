@@ -34,8 +34,8 @@ setup(
         'ivs3'
     ],
     install_requires = [
-        'argparse',
-        'eventlet',
-        'boto'
+        'argparse>=1.3.0',
+        'eventlet>=0.17.1',
+        'boto>=2.36.0'
     ]
 )

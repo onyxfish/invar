@@ -98,7 +98,6 @@ License
 Release process
 ===============
 
-#. Verify no `high priority issues <https://github.com/onyxfish/csvkit/issues?q=is%3Aopen+is%3Aissue+label%3A%22High+Priority%22>`_ are outstanding.
 #. Ensure these files all have the correct version number:
     * CHANGELOG
     * setup.py
