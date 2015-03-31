@@ -1,4 +1,5 @@
-*.swp
+*.sw[po]
 .DS_Store
 *.pyc
 dist
+build

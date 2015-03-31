@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>invar 0.1.0 &mdash; invar 0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="invar 0.1.0 documentation" href="#"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="#" class="fa fa-home"> invar</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">invar 0.1.0</a><ul>
+<li><a class="reference internal" href="#about">About</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#ivtile">ivtile</a></li>
+<li><a class="reference internal" href="#ivframe">ivframe</a></li>
+<li><a class="reference internal" href="#ivs3">ivs3</a></li>
+<li><a class="reference internal" href="#using-with-tilemill">Using with TileMill</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#credits">Credits</a><ul>
+<li><a class="reference internal" href="#open-street-map">Open Street Map</a></li>
+<li><a class="reference internal" href="#projects">Projects</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#authors">Authors</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+<li><a class="reference internal" href="#changelog">Changelog</a><ul>
+<li><a class="reference internal" href="#id1">0.1.0</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+</div>
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">invar</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="#">Docs</a> &raquo;</li>
+      
+    <li>invar 0.1.0</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/index.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="invar-release">
+<h1>invar 0.1.0<a class="headerlink" href="#invar-release" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="about">
+<h2>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>invar only works with Mapnik2. Instructions for installing Mapnik2 can be found <a class="reference external" href="https://github.com/mapnik/mapnik/wiki/Mapnik-Installation">here</a>. Once you have Mapnik2 installed you can install invar using pip:</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install invar
+</pre></div>
+</div>
+<p>It can be quite tricky to get Mapnik2 working within virtualenv, so it may be simpler/better to install invar in the global site-packages.</p>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ivtile">
+<h3>ivtile<a class="headerlink" href="#ivtile" title="Permalink to this headline">¶</a></h3>
+<p>ivtile renders continous tiles of the map, such as those used by Google Maps, Open Street Map, or any other &#8220;slippy&#8221; map provider.</p>
+<p>invar tiler sample usage:</p>
+<div class="highlight-python"><div class="highlight"><pre>ivtile map.xml output_directory 32.4419 -95.393 32.2307 -95.301 10 16 --process_count 2
+</pre></div>
+</div>
+<p>Details of each parameter are available via:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ivtile</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="ivframe">
+<h3>ivframe<a class="headerlink" href="#ivframe" title="Permalink to this headline">¶</a></h3>
+<p>ivframe renders discontinous frames of the map centered on locations, such as an individual map for the area around each of a hundred bus stops.</p>
+<p>invar framer rendering a single large frame to the current directory:</p>
+<div class="highlight-python"><div class="highlight"><pre>ivframe map.xml . 32.351 -95.301 --name filename_without_extension -w 1024 -t 768
+</pre></div>
+</div>
+<p>invar framer rendering a series frames from latitude/longitude pairs in a CSV file:</p>
+<div class="highlight-python"><div class="highlight"><pre>ivframe map.xml output_directory --csv data.csv --name name_column  --process_count 2
+</pre></div>
+</div>
+<p>Details of each parameter are available via:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ivframe</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="ivs3">
+<h3>ivs3<a class="headerlink" href="#ivs3" title="Permalink to this headline">¶</a></h3>
+<p>ivs3 pushes a collection of tiles (or anything, really) into an Amazon S3 bucket using concurrent connections (so its super-fast).</p>
+<p>Sample usage pushing a tiles directory into a bucket called &#8220;test_bucket&#8221;:</p>
+<div class="highlight-python"><div class="highlight"><pre>ivs3 tiles_directory test_bucket -P
+</pre></div>
+</div>
+<p>You must have your Amazon Web Services access credentials defined in the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables. The -P flag makes the uploaded files public. For a complete list of flags run:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ivs3</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-with-tilemill">
+<h3>Using with TileMill<a class="headerlink" href="#using-with-tilemill" title="Permalink to this headline">¶</a></h3>
+<p>In order to use invar with <a class="reference external" href="http://tilemill.com/">TileMill</a> you need to convert TileMill&#8217;s .mml configuration and .mss styles into a Mapnik .xml file. Here is an example of how to do this:</p>
+<div class="highlight-python"><div class="highlight"><pre>$TILEMILL_PATH/node_modules/carto/bin/carto map.mml &gt; map.xml
+</pre></div>
+</div>
+<p>Note: some versions of TileMill (0.10.1) print debug statements to STDOUT which can mess up the output of this conversion. If you see a line at the top of your output XML file like <code class="docutils literal"><span class="pre">[millstone]</span> <span class="pre">finished</span> <span class="pre">processing</span> <span class="pre">'/path/to/my/file'</span></code> then prefix your compile command with <code class="docutils literal"><span class="pre">NODE_ENV=foo</span></code> which will disable these statements.</p>
+</div>
+</div>
+<div class="section" id="credits">
+<h2>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="open-street-map">
+<h3>Open Street Map<a class="headerlink" href="#open-street-map" title="Permalink to this headline">¶</a></h3>
+<p>Much of this application is derived from selections of the Open Street Map project&#8211;notably <a class="reference external" href="http://svn.openstreetmap.org/applications/rendering/mapnik/generate_tiles.py">generate_tiles.py</a>.</p>
+</div>
+<div class="section" id="projects">
+<h3>Projects<a class="headerlink" href="#projects" title="Permalink to this headline">¶</a></h3>
+<p>invar was developed to address the needs of both <a class="reference external" href="http://twitter.com/tribapps">&#64;tribapps</a> and the <a class="reference external" href="http://hacktyler.com">#hacktyler</a> project.</p>
+</div>
+</div>
+<div class="section" id="authors">
+<h2>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Christopher Groskopf</li>
+</ul>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>The MIT License</p>
+<p>Copyright (c) 2015 Christopher Groskopf and contributers</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &#8220;Software&#8221;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED &#8220;AS IS&#8221;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</p>
+</div>
+<div class="section" id="changelog">
+<h2>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>0.1.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Add CHANGELOG</li>
+<li>Add AUTHORS</li>
+<li>Add docs</li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Christopher Groskopf.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

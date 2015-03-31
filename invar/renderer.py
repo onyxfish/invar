@@ -15,11 +15,11 @@ class Renderer(multiprocessing.Process):
     """
     A Mapnik renderer process.
     """
-    def __init__(self, output_dir, tile_queue, config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, buffer_size=None, skip_existing=False):
+    def __init__(self, output_dir, tile_queue, mapnik_config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, buffer_size=None, skip_existing=False):
         multiprocessing.Process.__init__(self)
 
         self.output_dir = output_dir
-        self.config = config
+        self.mapnik_config = mapnik_config
         self.tile_queue = tile_queue
         self.width = width
         self.height = height
@@ -29,7 +29,7 @@ class Renderer(multiprocessing.Process):
 
     def run(self):
         self.mapnik_map = mapnik.Map(self.width, self.height)
-        mapnik.load_map(self.mapnik_map, self.config, True)
+        mapnik.load_map(self.mapnik_map, self.mapnik_config, True)
 
         self.map_projection = mapnik.Projection(self.mapnik_map.srs)
         self.tile_projection = projections.GoogleProjection()
@@ -69,7 +69,7 @@ class TileRenderer(Renderer):
     """
     Renderer for tiles.
     """
-    def __init__(self, output_dir, tile_queue, config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, buffer_size=None, skip_existing=False, **kwargs):
+    def __init__(self, output_dir, tile_queue, mapnik_config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, buffer_size=None, skip_existing=False, **kwargs):
         super(TileRenderer, self).__init__(output_dir, tile_queue, config, width, height, filetype, buffer_size, skip_existing)
         self.grid = kwargs.get('grid', False)
         self.key =  kwargs.get('key', None)
@@ -101,7 +101,7 @@ class TileRenderer(Renderer):
         self.mapnik_map.zoom_to_box(bbox)
         self.mapnik_map.buffer_size = self.buffer_size
 
-        if self.filetype == 'svg' or 'pdf':
+        if self.filetype == 'svg':
             surface = cairo.SVGSurface(os.path.join(self.output_dir, filename), self.width, self.height)
             mapnik.render(self.mapnik_map, surface)
             surface.finish()
@@ -169,7 +169,7 @@ class FrameRenderer(Renderer):
         self.mapnik_map.zoom_to_box(bbox)
         self.mapnik_map.buffer_size = self.buffer_size
 
-        if self.filetype == 'svg' or 'pdf':
+        if self.filetype == 'svg':
             surface = cairo.SVGSurface(os.path.join(self.output_dir, filename), self.width, self.height)
             mapnik.render(self.mapnik_map, surface)
             surface.finish()
