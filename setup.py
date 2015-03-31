@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name = "invar",
-    version = "0.1.0",
+    version = "0.1.1",
     description = "Scripts for generating images from Mapnik configuration and storing them on S3.",
     author='Christopher Groskopf',
     author_email='staringmonkey@gmail.com',
