@@ -77,11 +77,11 @@ class TileRenderer(Renderer):
         self.key =  kwargs.get('key', None)
         self.fields =  kwargs.get('fields', None)
 
-    def render(self, filename, tile_x, tile_y, zoom):
+    def render(self, path, tile_x, tile_y, zoom):
         """
         Render a single tile to a given filename.
         """
-        print 'Rendering %s' % (filename)
+        print 'Rendering %s' % (path)
 
         # Calculate pixel positions of bottom-left & top-right
         half_width = self.width / 2
@@ -104,13 +104,13 @@ class TileRenderer(Renderer):
         self.mapnik_map.buffer_size = self.buffer_size
 
         if self.filetype == 'svg':
-            surface = cairo.SVGSurface(os.path.join(self.output_dir, filename), self.width, self.height)
+            surface = cairo.SVGSurface(path, self.width, self.height)
             mapnik.render(self.mapnik_map, surface)
             surface.finish()
         else:
             image = mapnik.Image(self.width, self.height)
             mapnik.render(self.mapnik_map, image)
-            image.save(os.path.join(self.output_dir, filename), self.filetype)
+            image.save(path, self.filetype)
 
         if self.grid:
             if self.key:
@@ -123,18 +123,18 @@ class TileRenderer(Renderer):
             if self.fields:
                 fields.extend(self.fields)
 
-            mapnik.render_layer(self.mapnik_map,grid,layer=0,fields=fields)
+            mapnik.render_layer(self.mapnik_map,grid, layer=0, fields=fields)
             # then encode the grid array as utf, resample to 1/4 the size, and dump features
             # this comes from https://github.com/springmeyer/gridsforkids/blob/master/generate_tiles.py
             # with little consideration
             grid_utf = grid.encode('utf', resolution=4, features=True)
 
             # client code uses jsonp, so fake by wrapping in grid() callback
-            base, ext = os.path.splitext(filename)
+            base, ext = os.path.splitext(path)
             grid_filename = '%s.grid.json' % base
-            print 'Rendering %s' % (grid_filename)
+            print 'Rendering %s' % (grid_path)
 
-            with open(os.path.join(self.output_dir, grid_filename),'wb') as f:
+            with open(grid_path, 'wb') as f:
                 f.write('grid(' + json.dumps(grid_utf) + ')')
 
 
