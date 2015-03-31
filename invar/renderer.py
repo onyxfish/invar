@@ -15,12 +15,12 @@ class Renderer(multiprocessing.Process):
     """
     A Mapnik renderer process.
     """
-    def __init__(self, output_dir, tile_queue, mapnik_config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, buffer_size=None, skip_existing=False):
+    def __init__(self, output_dir, tile_queues, mapnik_config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, buffer_size=None, skip_existing=False):
         multiprocessing.Process.__init__(self)
 
         self.output_dir = output_dir
         self.mapnik_config = mapnik_config
-        self.tile_queue = tile_queue
+        self.tile_queues = tile_queues
         self.width = width
         self.height = height
         self.buffer_size = buffer_size if buffer_size else max(width, height)
@@ -37,10 +37,12 @@ class Renderer(multiprocessing.Process):
         while True:
             tile_parameters = None
 
-            try:
-                tile_parameters = self.tile_queue.get_nowait()
-            except Queue.Empty:
-                pass
+            for tile_queue in self.tile_queues:
+                try:
+                    tile_parameters = tile_queue.get_nowait()
+                    break
+                except Queue.Empty:
+                    pass
 
             # Couldn't get tile parameters from any queue--all done
             if not tile_parameters:
@@ -52,12 +54,12 @@ class Renderer(multiprocessing.Process):
 
                 if os.path.exists(os.path.join(self.output_dir, filename)):
                     print 'Skipping %s' % (filename)
-                    self.tile_queue.task_done()
+                    tile_queue.task_done()
 
                     continue
 
             self.render(*tile_parameters)
-            self.tile_queue.task_done()
+            tile_queue.task_done()
 
     def render(self):
         """
@@ -69,8 +71,8 @@ class TileRenderer(Renderer):
     """
     Renderer for tiles.
     """
-    def __init__(self, output_dir, tile_queue, mapnik_config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, buffer_size=None, skip_existing=False, **kwargs):
-        super(TileRenderer, self).__init__(output_dir, tile_queue, config, width, height, filetype, buffer_size, skip_existing)
+    def __init__(self, output_dir, tile_queues, mapnik_config, width=constants.DEFAULT_WIDTH, height=constants.DEFAULT_HEIGHT, filetype=constants.DEFAULT_FILE_TYPE, buffer_size=None, skip_existing=False, **kwargs):
+        super(TileRenderer, self).__init__(output_dir, tile_queues, mapnik_config, width, height, filetype, buffer_size, skip_existing)
         self.grid = kwargs.get('grid', False)
         self.key =  kwargs.get('key', None)
         self.fields =  kwargs.get('fields', None)

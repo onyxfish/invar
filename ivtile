@@ -24,9 +24,9 @@ class IVTile(invar.InvarUtility):
         self.argparser.add_argument('min_zoom', help="Minimum zoom level to render", type=int, default=DEFAULT_MIN_ZOOM)
         self.argparser.add_argument('max_zoom', help="Maximum zoom level to render", type=int, default=DEFAULT_MAX_ZOOM)
 
-        self.argparser.add_argument('-g', '--grid', action="store_true", help="Force grid JSON to be rendered alongside each tile. If -k or -f options are provided, this is inferred and need not be specified.")
-        self.argparser.add_argument('-k', '--key', help="For grid rendering, the column in the associated dataset which is a unique ID for a feature. If not specified, will use mapnik default ('__id__')")
-        self.argparser.add_argument('-f', '--fields', help="For grid rendering, a comma separated list of fields associated with each feature which will be included in grid JSON.")
+        self.argparser.add_argument('--grid', action="store_true", help="Force grid JSON to be rendered alongside each tile. If -k or -f options are provided, this is inferred and need not be specified.")
+        self.argparser.add_argument('--key', help="For grid rendering, the column in the associated dataset which is a unique ID for a feature. If not specified, will use mapnik default ('__id__')")
+        self.argparser.add_argument('--fields', help="For grid rendering, a comma separated list of fields associated with each feature which will be included in grid JSON.")
 
     def main(self):
         if not os.path.isdir(self.args.output_dir):

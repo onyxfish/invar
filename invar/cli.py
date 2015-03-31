@@ -49,8 +49,8 @@ class InvarUtility(object):
 
         self.argparser.add_argument('config', help="Mapnik2 XML configuration file.")
         self.argparser.add_argument('output_dir', help="Destination directory for output.")
-        self.argparser.add_argument('-f', '--file_type', help='Output file type. One of [png, png32, svg].',  default=constants.DEFAULT_FILE_TYPE)
-        self.argparser.add_argument('-p', '--process_count', help="Number of rendering processes to create.", type=int, default=constants.DEFAULT_PROCESS_COUNT)
+        self.argparser.add_argument('-f', '--file-type', help='Output file type. One of [png, png32, svg].',  default=constants.DEFAULT_FILE_TYPE)
+        self.argparser.add_argument('-p', '--process-count', help="Number of rendering processes to create.", type=int, default=constants.DEFAULT_PROCESS_COUNT)
         self.argparser.add_argument('-w', '--width', help="Width of images to render.", type=int, default=constants.DEFAULT_WIDTH)
         self.argparser.add_argument('-t', '--height', help="Height of images to render.", type=int, default=constants.DEFAULT_HEIGHT)
         self.argparser.add_argument('-b', '--buffer', type=int, help="The buffer drawn around the image during rendering. Defaults to the width or height, whichever is greater, however, it may not be increased when rendering large elements at small zoom levels.")

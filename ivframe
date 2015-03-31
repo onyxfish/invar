@@ -46,7 +46,7 @@ class IVFrame(invar.InvarUtility):
         processes = []
 
         for i in range(self.args.process_count):
-            renderer = invar.FrameRenderer(self.args.output_dir, tile_queue, self.args.config, self.args.width, self.args.height, filetype=self.args.file_type, buffer_size=self.args.buffer, skip_existing=self.args.skip_existing)
+            renderer = invar.FrameRenderer(self.args.output_dir, [tile_queue], self.args.config, self.args.width, self.args.height, filetype=self.args.file_type, buffer_size=self.args.buffer, skip_existing=self.args.skip_existing)
             renderer.start()
 
             processes.append(renderer)
